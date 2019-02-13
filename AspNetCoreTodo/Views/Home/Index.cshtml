@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Optum App</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<div id="lblClientMessage" style="float: left;margin-left: 10px">Message from IFrame</div>
+<input type="button" id="openButton" height="10" width="10" value="Open" style="float: left;margin-left: 10px"></button>
+<input type="text" id="txtToken" height="10" width="20" style="float: left;margin-left: 10px"/>
+<input type="button" id="sendButton" height="10" width="10" value="Send" style="float: left;margin-left: 10px"></button>
+<iframe name="theFrame" id="frame" height="800" width="800" style="float: left;margin-left: 10px"></iframe>
+@section Scripts{
+   <script>
+    $(document).ready(function () {
+         $("#openButton").click(function () {
+            $("#frame").attr("src", "http://172.30.5.28:8086/");
+        });
+        // Create IE + others compatible event handler
+        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+        // Listen to message from child window
+        eventer(messageEvent,function(e) {
+            console.log('parent received message!:  ',e.data);
+             document.getElementById('lblClientMessage').innerHTML = e.data;
+        },false);
+
+         $("#sendButton").click(function () {
+            var iframeWin = document.getElementById("frame").contentWindow;
+            var token=$("#txtToken").val();
+            iframeWin.postMessage(token,"*");
+        });
+    });
+</script>
+}
+
